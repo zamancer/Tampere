@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tampere.Notifiers;
@@ -15,18 +8,20 @@ namespace Tampere
 {
     public partial class MainForm : Form
     {
-        private PlaysTvTrayNotifier _playsTvNotifier;
+        ContextMenu _contextMenu;
+        Notifier _appNotifier;
 
         public MainForm()
         {
             InitializeComponent();
-            InitializeTrayApp();
+            InitializeContextMenu();
+            InitializeAppNotifier();
         }
 
-        private void InitializeTrayApp()
+        private void InitializeContextMenu()
         {
-            var contextMenu = new ContextMenu();
-            
+            _contextMenu = new ContextMenu();
+
             var menuItem1 = new MenuItem("Clean PlaysTv");
             menuItem1.Click += cleanPlaysTv_Click;
 
@@ -36,36 +31,40 @@ namespace Tampere
             var menuItem3 = new MenuItem("Close");
             menuItem3.Click += close_Click;
 
-            contextMenu.MenuItems.Add(menuItem1);
-            contextMenu.MenuItems.Add(menuItem2);
-            contextMenu.MenuItems.Add(menuItem3);
+            _contextMenu.MenuItems.Add(menuItem1);
+            _contextMenu.MenuItems.Add(menuItem2);
+            _contextMenu.MenuItems.Add(menuItem3);
+        }
 
-            appNotifyIcon.ContextMenu = contextMenu;
-
+        private void InitializeAppNotifier()
+        {
+            appNotifyIcon.ContextMenu = _contextMenu;
             appNotifyIcon.BalloonTipTitle = "Tampere";
 
-            _playsTvNotifier = new PlaysTvTrayNotifier(appNotifyIcon);
+            _appNotifier = Notifier.Instance;
+            _appNotifier.Notificator = new TrayNotificator(appNotifyIcon);
+            Task.Factory.StartNew(_appNotifier.Run);
+        }
+
+        private void cleanPlaysTv_Click(object sender, EventArgs e)
+        {
+            _appNotifier.EnqueueNotification("Archiving PlaysTV videos...");
+
+            PlaysTvArchiver archiver = new PlaysTvArchiver();
+            archiver.Run();
+        }
+
+        private void cleanDesktop_Click(object sender, EventArgs e)
+        {
+            _appNotifier.EnqueueNotification("Cleaning Desktop...");
+
+            DesktopCleaner cleaner = new DesktopCleaner();
+            cleaner.Run();
         }
 
         private void close_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        void cleanDesktop_Click(object sender, EventArgs e)
-        {
-            appNotifyIcon.BalloonTipText = "Cleaning Desktop...";
-            appNotifyIcon.ShowBalloonTip(500);
-            
-        }
-
-        private void cleanPlaysTv_Click(object sender, EventArgs e)
-        {
-            appNotifyIcon.BalloonTipText = "Archiving PlaysTV videos...";
-            appNotifyIcon.ShowBalloonTip(50);
-
-            PlaysTvArchiver archiver = new PlaysTvArchiver(_playsTvNotifier);
-            archiver.Run();
         }
     }
 }

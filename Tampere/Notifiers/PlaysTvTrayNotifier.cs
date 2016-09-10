@@ -10,29 +10,29 @@ namespace Tampere.Notifiers
 {
     public class PlaysTvTrayNotifier
     {
-        private NotifyIcon _notificationIcon;
-
-        public PlaysTvTrayNotifier(NotifyIcon notificationIcon)
+        public PlaysTvTrayNotifier()
         {
-            _notificationIcon = notificationIcon;
         }
 
         public void OnCompleted(FileMovement value)
         {
-            _notificationIcon.BalloonTipText = String.Format("Deleted {0} video files...", value.FilesDeleted);
-            _notificationIcon.ShowBalloonTip(150);
+            var notificationMessage = String.Format("Deleted {0} video files...", value.FilesDeleted);
+
+            Notifier.Instance.EnqueueNotification(notificationMessage);
         }
 
         public void OnNext(FileMovement value)
         {
-            _notificationIcon.BalloonTipText = String.Format("Copying file {0}/{1}...", value.FileNumber, value.FileTotal);
-            _notificationIcon.ShowBalloonTip(150);
+            var notificationMessage = String.Format("Copying file {0}/{1}...", value.FileNumber, value.FileTotal);
+
+            Notifier.Instance.EnqueueNotification(notificationMessage);
         }
 
         public void OnStart(FileMovement value)
         {
-            _notificationIcon.BalloonTipText = String.Format("About to copy {0} video files...", value.FileTotal);
-            _notificationIcon.ShowBalloonTip(150);
+            var notificationMessage = String.Format("About to copy {0} video files...", value.FileTotal);
+
+            Notifier.Instance.EnqueueNotification(notificationMessage);
         }
     }
 }

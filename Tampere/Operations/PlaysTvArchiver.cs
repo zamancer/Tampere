@@ -15,16 +15,16 @@ namespace Tampere.Operations
         private string _lolDirectory;
         private string _backupDirectory;
 
-        const string videoFilesExtension = ".mp4";
+        const string VIDEO_FILES_EXTENSION = ".mp4";
 
-        private PlaysTvTrayNotifier _onFileMovement;
+        private PlaysTvTrayNotifier _trayNotifier;
 
-        internal PlaysTvArchiver(PlaysTvTrayNotifier onFileMovement)
+        internal PlaysTvArchiver()
         {
             _lolDirectory = ConfigurationParameters.Instance.ConfigParamters["lolDirectory"];
             _backupDirectory = ConfigurationParameters.Instance.ConfigParamters["backupDirectory"];
 
-            _onFileMovement = onFileMovement;
+            _trayNotifier = new PlaysTvTrayNotifier();
 
             PrepareArchiveDestination();
         }
@@ -44,12 +44,12 @@ namespace Tampere.Operations
                 List<FileToMove> files2Move = GetPlaysTvFilesToMove();
 
                 FileMovement fileMovementReport = new FileMovement { FileTotal = files2Move.Count };
-                _onFileMovement.OnStart(fileMovementReport);
+                _trayNotifier.OnStart(fileMovementReport);
 
                 for (int i = 0; i < files2Move.Count; i++)
                 {
                     fileMovementReport.FileNumber = i + 1;
-                    _onFileMovement.OnNext(fileMovementReport);
+                    _trayNotifier.OnNext(fileMovementReport);
 
                     FileToMove f2m = files2Move[i];
 
@@ -64,7 +64,7 @@ namespace Tampere.Operations
                     file.Delete();
                 }
 
-                _onFileMovement.OnCompleted(fileMovementReport);
+                _trayNotifier.OnCompleted(fileMovementReport);
             }
         }
 
@@ -90,7 +90,7 @@ namespace Tampere.Operations
             {
                 string fileExtension = Path.GetExtension(file);
 
-                if (fileExtension.Equals(videoFilesExtension))
+                if (fileExtension.Equals(VIDEO_FILES_EXTENSION))
                 {
                     string filename = Path.GetFileName(file);
                     string destFilename = Path.Combine(_backupDirectory, filename);

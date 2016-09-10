@@ -1,4 +1,3 @@
 ﻿* Missing Unhandled Exceptions management.
 * Missing try catch for I/O operations (Operations namespace).
-* Needs implementation of observer pattern for Notifiers.
 * Needs Tasks implementation (async).

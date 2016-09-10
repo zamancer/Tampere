@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Tampere.Configurations;
+using Tampere.Notifiers;
 
 namespace Tampere.Operations
 {
@@ -31,6 +32,8 @@ namespace Tampere.Operations
 
             string[] files = Directory.GetFiles(_desktopPath);
 
+            Notifier.Instance.EnqueueNotification("About to clean " + files.Length);
+
             foreach (string file in files)
             {
                 string filename = Path.GetFileName(file);
@@ -41,6 +44,9 @@ namespace Tampere.Operations
 
                 File.Delete(file);
             }
+
+            Notifier.Instance.EnqueueNotification("Desktop cleaning complete");
+
         }
 
         private void PrepareInboxDirectory()

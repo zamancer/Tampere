@@ -53,8 +53,10 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Notifiers\INotificator.cs" />
     <Compile Include="Notifiers\Notifier.cs" />
     <Compile Include="Notifiers\PlaysTvTrayNotifier.cs" />
+    <Compile Include="Notifiers\TrayNotificator.cs" />
     <Compile Include="Operations\DesktopCleaner.cs" />
     <Compile Include="Operations\PlaysTvArchiver.cs" />
     <Compile Include="Program.cs" />
